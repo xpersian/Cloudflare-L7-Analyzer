@@ -6,8 +6,34 @@
 
 # 🚀 Advanced L7 Cloudflare Scanner & Analyzer (Android)
 ### آنالیزور و اسکنر پیشرفته لایه ۷ کلودفلر (نسخه اندروید)
+### ✨ Key Features (New in v1.4.5)
+- **Smart Link Importer:** Automatically extract UUID, SNI, Path, and Port by just pasting a VLESS/Trojan link.
+- **L7 Deep Analysis:** Verifies connections up to the SSL/WS handshake level.
+- **Max Speed Scanning:** Optimized multi-threading with 100+ concurrent threads (Semaphore 100).
+- **Dynamic Speed Test:** Intelligent speed test button that appears only after a successful scan.
+- **Configuration Management:** New "Delete All" feature to reset settings instantly.
+- **Direct Integration:** One-click copy and connect for **NetMod Syna** and **v2rayNG**.
 
 ---
+
+## 🇮🇷 توضیحات فارسی
+این اپلیکیشن اندرویدی ابزاری قدرتمند برای یافتن و تحلیل آی‌پی‌های تمیز کلودفلر با استفاده از روش **تست لایه ۷ (Handshake 101)** است. برخلاف ابزارهای پینگ ساده، این برنامه با شبیه‌سازی دقیق اتصال وی‌پی‌ان، پایداری واقعی را می‌سنجد.
+
+### ✨ قابلیت‌های کلیدی (نسخه v1.4.5):
+- **واردکننده هوشمند (Smart Importer):** استخراج خودکار تمام اطلاعات (UUID, SNI, Path) تنها با پیست کردن لینک VLESS یا Trojan.
+- **آنالیز عمیق لایه ۷:** بررسی اتصال تا مرحله نهایی هندشیک SSL و WebSocket (کد ۱۰۱).
+- **اسکن موازی فوق‌سریع:** استفاده از سیستم Semaphore برای مدیریت ۱۰۰ رشته همزمان (مطابق نسخه مرجع).
+- **تست استرس هوشمند:** دکمه تست سرعت جدید با قابلیت نمایش هوشمند پس از اتمام اسکن.
+- **مدیریت تنظیمات:** اضافه شدن دکمه حذف کلی تنظیمات (Delete All) برای بازنشانی سریع برنامه.
+- **اتصال مستقیم:** قابلیت کپی هوشمند و باز کردن خودکار در اپلیکیشن‌های **NetMod Syna** و **v2rayNG**.
+
+
+
+<img width="394" height="866" alt="image" src="https://github.com/user-attachments/assets/1c6ce700-8a47-474e-bb99-b433f331ceef" />
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## 🌍 English Description
 A high-performance Android application designed to discover and analyze Cloudflare nodes using **Layer 7 (Handshake 101)** verification. Unlike simple ping tools, this app performs deep stress testing to ensure the stability of V2Ray/VLESS connections.
