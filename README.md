@@ -1,3 +1,9 @@
+![GitHub License](https://img.shields.io/github/license/ehsandftm/Cloudflare-L7-Analyzer?style=flat-square&color=blue)
+![GitHub Release](https://img.shields.io/github/v/release/ehsandftm/Cloudflare-L7-Analyzer?style=flat-square&color=green)
+![Android Badge](https://img.shields.io/badge/Platform-Android-brightgreen?style=flat-square&logo=android)
+![Kotlin Badge](https://img.shields.io/badge/Language-Kotlin-purple?style=flat-square&logo=kotlin)
+
+
 # 🚀 Advanced L7 Cloudflare Scanner & Analyzer (Android)
 ### آنالیزور و اسکنر پیشرفته لایه ۷ کلودفلر (نسخه اندروید)
 
@@ -29,9 +35,13 @@ A high-performance Android application designed to discover and analyze Cloudfla
 
 ---
 
-## 📸 Screenshots / اسکرین‌شات‌ها
-*(Tip: Drag and drop your app screenshots here to showcase the UI)*
-*(نکته: عکس‌های محیط برنامه را اینجا آپلود کنید تا ظاهر برنامه دیده شود)*
+<img width="377" height="813" alt="image" src="https://github.com/user-attachments/assets/7b562ded-2442-401f-a5e4-34f09fcf11c0" />
+<img width="403" height="825" alt="image" src="https://github.com/user-attachments/assets/d287316b-413a-43ad-ac5b-e4a73aaec89d" />
+<img width="387" height="832" alt="image" src="https://github.com/user-attachments/assets/f9e25fd2-6e2d-4506-8af1-43a696fb7a68" />
+<img width="387" height="822" alt="image" src="https://github.com/user-attachments/assets/9c91fecb-cf51-4389-b576-2ec70f323616" />
+
+
+
 
 ---
 
@@ -46,6 +56,32 @@ A high-performance Android application designed to discover and analyze Cloudfla
 
 ---
 
+🛠 Setup Guide (For Beginners)
+
+To start scanning, you must enter your personal server details in the INPUT tab:
+
+SNI (Server Name Indication): Enter your subdomain address or Worker URL here.
+
+Path: Enter the Path information exactly as it appears in your v2ray configuration.
+
+UUID: Paste your VLESS config's unique identifier. This code is required for connection authentication.
+
+Note: After entering the details, make sure to click the SAVE SETTINGS button to store them for future scans.
+
+
+🇮🇷 راهنمای تنظیمات (برای کاربران مبتدی)
+برای شروع اسکن، باید اطلاعات سرور شخصی خود را در تب INPUT وارد کنید:
+
+SNI (Server Name Indication): 
+در این قسمت آدرس ساب دامین یا ورکر را وارد کنید
+Path: 
+در این قسمت اطلاعاتی که در کانفیگ v2ray را زدید وارد کنید
+UUID:
+ کد شناسایی اختصاصی کانفیگ VLESS خود را در این کادر کپی کنید. این کد برای احراز هویت اتصال شماست.
+
+نکته: پس از وارد کردن اطلاعات، حتماً دکمه SAVE SETTINGS را بزنید تا تنظیمات برای اسکن‌های بعدی ذخیره .
+
+
 ## 🛠 Tech Stack
 - **Language:** Kotlin
 - **UI:** Jetpack Compose
@@ -54,3 +90,4 @@ A high-performance Android application designed to discover and analyze Cloudfla
 
 ---
 *Developed with ❤️ for a free and stable internet.*
+حقوق معنوی این نرم افزار برای من محفوظ می باشد.
