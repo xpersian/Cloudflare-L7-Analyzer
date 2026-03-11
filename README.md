@@ -6,30 +6,78 @@
 
 # 🚀 Advanced L7 Cloudflare Scanner & Analyzer (Android)
 ### آنالیزور و اسکنر پیشرفته لایه ۷ کلودفلر (نسخه اندروید)
-### ✨ Key Features (New in v1.4.5)
-- **Smart Link Importer:** Automatically extract UUID, SNI, Path, and Port by just pasting a VLESS/Trojan link.
-- **L7 Deep Analysis:** Verifies connections up to the SSL/WS handshake level.
-- **Max Speed Scanning:** Optimized multi-threading with 100+ concurrent threads (Semaphore 100).
-- **Dynamic Speed Test:** Intelligent speed test button that appears only after a successful scan.
-- **Configuration Management:** New "Delete All" feature to reset settings instantly.
-- **Direct Integration:** One-click copy and connect for **NetMod Syna** and **v2rayNG**.
+## ✨ Key Features (New in v1.5.4)
+
+- **Xray Final Validation:** Final scan results can now be validated through an integrated Xray bridge for behavior closer to a real client.
+- **Real Client-Like Scanning:** The scanner no longer relies only on basic handshake checks and now uses a deeper staged validation pipeline.
+- **CloudFront Scanner Core:** Added a dedicated scanner core for CloudFront networks alongside the original Cloudflare workflow.
+- **3-Stage Scan Pipeline:** Initial fast scan → automatic top 100 selection → final validation with optional Xray confirmation.
+- **Pause / Resume / Stop Support:** Long scans can now be paused and resumed without losing progress.
+- **Improved Config Parsing:** Better handling for VLESS / Trojan configs with smarter manual input and import flow.
+- **File-Based IP Loading:** Supports loading IPs, CIDRs, dash ranges, and candidate lists from files.
+- **New Ranked Result System:** Results are now scored and categorized by validation quality and confidence.
+- **Modern Core-Based UI:** Separate Cloudflare / CloudFront workspaces with improved layout and action controls.
+- **NetMod Integration:** One-click config copy and quick launch support for NetMod workflow.
 
 ---
 
 ## 🇮🇷 توضیحات فارسی
-این اپلیکیشن اندرویدی ابزاری قدرتمند برای یافتن و تحلیل آی‌پی‌های تمیز کلودفلر با استفاده از روش **تست لایه ۷ (Handshake 101)** است. برخلاف ابزارهای پینگ ساده، این برنامه با شبیه‌سازی دقیق اتصال وی‌پی‌ان، پایداری واقعی را می‌سنجد.
 
-### ✨ قابلیت‌های کلیدی (نسخه v1.4.5):
-- **واردکننده هوشمند (Smart Importer):** استخراج خودکار تمام اطلاعات (UUID, SNI, Path) تنها با پیست کردن لینک VLESS یا Trojan.
-- **آنالیز عمیق لایه ۷:** بررسی اتصال تا مرحله نهایی هندشیک SSL و WebSocket (کد ۱۰۱).
-- **اسکن موازی فوق‌سریع:** استفاده از سیستم Semaphore برای مدیریت ۱۰۰ رشته همزمان (مطابق نسخه مرجع).
-- **تست استرس هوشمند:** دکمه تست سرعت جدید با قابلیت نمایش هوشمند پس از اتمام اسکن.
-- **مدیریت تنظیمات:** اضافه شدن دکمه حذف کلی تنظیمات (Delete All) برای بازنشانی سریع برنامه.
-- **اتصال مستقیم:** قابلیت کپی هوشمند و باز کردن خودکار در اپلیکیشن‌های **NetMod Syna** و **v2rayNG**.
+این نسخه، پروژه را از یک اسکنر ساده مبتنی بر هندشیک به یک **معماری چندمرحله‌ای پیشرفته‌تر** ارتقا می‌دهد که رفتار آن بسیار نزدیک‌تر به یک **کلاینت واقعی** است.
 
+در نسخه `v1.5.4` تمرکز اصلی روی افزایش دقت نتایج، اضافه شدن هسته **Xray** برای اعتبارسنجی نهایی، و پشتیبانی از **CloudFront** در کنار Cloudflare بوده است.
 
+### ✨ قابلیت‌های کلیدی (نسخه v1.5.4)
 
-<img width="394" height="866" alt="image" src="https://github.com/user-attachments/assets/1c6ce700-8a47-474e-bb99-b433f331ceef" />
+- **اعتبارسنجی نهایی مبتنی بر Xray:** نتایج نهایی اسکن اکنون می‌توانند از طریق هسته Xray بررسی شوند تا خروجی به رفتار واقعی کلاینت نزدیک‌تر شود.
+- **اسکن واقعی‌تر:** منطق اسکن دیگر فقط بر پایه تست ساده هندشیک نیست و از یک فرآیند چندمرحله‌ای دقیق‌تر استفاده می‌کند.
+- **افزودن هسته اختصاصی CloudFront:** علاوه بر Cloudflare، اکنون هسته جداگانه‌ای برای اسکن شبکه CloudFront نیز اضافه شده است.
+- **پایپ‌لاین سه‌مرحله‌ای اسکن:** اسکن سریع اولیه → انتخاب خودکار 100 نتیجه برتر → اعتبارسنجی نهایی با امکان بررسی توسط Xray.
+- **قابلیت Pause / Resume / Stop:** اسکن‌های طولانی حالا بدون از بین رفتن پیشرفت، قابل توقف موقت و ادامه دادن هستند.
+- **بهبود پردازش کانفیگ‌ها:** پشتیبانی بهتر از لینک‌ها و ورودی‌های دستی VLESS / Trojan.
+- **بارگذاری IP از فایل:** امکان دریافت IP، رنج CIDR، بازه‌های dash و لیست کاندیدها از فایل.
+- **سیستم جدید رتبه‌بندی نتایج:** نتایج حالا بر اساس کیفیت اعتبارسنجی و confidence امتیازدهی و دسته‌بندی می‌شوند.
+- **رابط کاربری مدرن‌تر:** محیط جداگانه برای Cloudflare و CloudFront با ساختار بهتر و کنترل‌های کاربردی‌تر.
+- **اتصال به NetMod:** کپی سریع کانفیگ و آماده‌سازی بهتر برای استفاده در NetMod.
+
+---
+
+## 🧠 How It Works
+
+This version uses a staged validation model:
+
+1. **Initial Fast Scan** on all candidates  
+2. **Top 100 Selection** based on score, latency, and stability  
+3. **Final Validation** with deeper probing and optional **Xray** outbound delay test  
+
+This reduces false positives and improves real-world usability.
+
+---
+
+## ⚙️ Supported Workflows
+
+- **Cloudflare scanner**
+- **CloudFront scanner**
+- **Config scan**
+- **IP / CIDR / range scan**
+- **Manual config input**
+- **File-based candidate loading**
+- **NetMod export workflow**
+
+---
+
+## 📌 Release Highlights
+
+- Added **Xray core integration**
+- Added **CloudFront scanning support**
+- Rebuilt the scanner into a **3-stage validation pipeline**
+- Added **pause / resume / stop** scanning controls
+- Improved config parsing and result scoring
+- Redesigned UI around separate scanning cores
+
+<img width="384" height="857" alt="image" src="https://github.com/user-attachments/assets/b1f2637f-c832-4569-a7b1-68ec8b8cfd5d" />
+<img width="404" height="863" alt="image" src="https://github.com/user-attachments/assets/812f5610-18e8-42d9-98c2-f99459edc561" />
+<img width="395" height="857" alt="image" src="https://github.com/user-attachments/assets/3239fd45-41e6-43da-8bf5-df9473c319f7" />
 
 
 
