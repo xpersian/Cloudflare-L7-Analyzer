@@ -64,7 +64,7 @@ import javax.net.ssl.SSLParameters
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import androidx.compose.material3.NavigationBarItemDefaults
-private const val APP_VERSION = "v1.5.4-phase2"
+private const val APP_VERSION = "v1.5.5"
 
 enum class ScannerCore { CLOUDFLARE, CLOUDFRONT }
 enum class ResultTier { VERIFIED, STRONG, GOOD, BORDERLINE, FAILED }
@@ -219,9 +219,9 @@ private fun Intent.readParsedConfigExtras(): ParsedTunnelConfig = ParsedTunnelCo
     path = getStringExtra(EXTRA_CFG_PATH) ?: "/",
     transport = getStringExtra(EXTRA_CFG_TRANSPORT) ?: "ws",
     tls = getBooleanExtra(EXTRA_CFG_TLS, true),
-    alpn = getStringExtra(EXTRA_CFG_ALPN) ?: "http/1.1",
-    fingerprint = getStringExtra(EXTRA_CFG_FINGERPRINT) ?: "chrome",
-    flow = getStringExtra(EXTRA_CFG_FLOW) ?: "none",
+    alpn = getStringExtra(EXTRA_CFG_ALPN) ?: "",
+    fingerprint = getStringExtra(EXTRA_CFG_FINGERPRINT) ?: "",
+    flow = getStringExtra(EXTRA_CFG_FLOW) ?: "",
     allowInsecure = getBooleanExtra(EXTRA_CFG_ALLOW_INSECURE, false),
     label = getStringExtra(EXTRA_CFG_LABEL) ?: "manual",
     originalUri = getStringExtra(EXTRA_CFG_ORIGINAL_URI)
@@ -491,27 +491,27 @@ class SettingsManager(context: Context, profileName: String) {
     var path: String get() = prefs.getString("path", "/") ?: "/"; set(v) = prefs.edit().putString("path", v).apply()
     var userId: String get() = prefs.getString("userId", "") ?: ""; set(v) = prefs.edit().putString("userId", v).apply()
     var port: String get() = prefs.getString("port", "443") ?: "443"; set(v) = prefs.edit().putString("port", v).apply()
-    var alpn: String get() = prefs.getString("alpn", "http/1.1") ?: "http/1.1"; set(v) = prefs.edit().putString("alpn", v).apply()
+    var alpn: String get() = prefs.getString("alpn", "") ?: ""; set(v) = prefs.edit().putString("alpn", v).apply()
     var transport: String get() = prefs.getString("transport", "ws") ?: "ws"; set(v) = prefs.edit().putString("transport", v).apply()
-    var flow: String get() = prefs.getString("flow", "none") ?: "none"; set(v) = prefs.edit().putString("flow", v).apply()
-    var fingerprint: String get() = prefs.getString("fingerprint", "chrome") ?: "chrome"; set(v) = prefs.edit().putString("fingerprint", v).apply()
+    var flow: String get() = prefs.getString("flow", "") ?: ""; set(v) = prefs.edit().putString("flow", v).apply()
+    var fingerprint: String get() = prefs.getString("fingerprint", "") ?: ""; set(v) = prefs.edit().putString("fingerprint", v).apply()
     var tls: Boolean get() = prefs.getBoolean("tls", true); set(v) = prefs.edit().putBoolean("tls", v).apply()
     var insecure: Boolean get() = prefs.getBoolean("insecure", false); set(v) = prefs.edit().putBoolean("insecure", v).apply()
     fun clearAll() = prefs.edit().clear().apply()
     fun toParsedConfig(core: ScannerCore) = ParsedTunnelConfig(
         protocol = protocol,
         userId = userId,
-        originalHost = host.ifBlank { sni },
+        originalHost = sni.ifBlank { host },
         port = port.toIntOrNull() ?: if (tls) 443 else 80,
         host = host,
-        sni = sni,
+        sni = if (tls) sni else "",
         path = path.ifBlank { "/" },
         transport = transport,
         tls = tls,
-        alpn = alpn,
-        fingerprint = fingerprint,
+        alpn = if (tls) alpn else "",
+        fingerprint = if (tls) fingerprint else "",
         flow = flow,
-        allowInsecure = insecure,
+        allowInsecure = if (tls) insecure else false,
         label = if (core == ScannerCore.CLOUDFRONT) "cloudfront-manual" else "cloudflare-manual"
     )
 }
@@ -899,9 +899,9 @@ fun InputTab(core: ScannerCore, settings: SettingsManager) {
     var alpnExpanded by remember { mutableStateOf(false) }
     var flowExpanded by remember { mutableStateOf(false) }
     var fingerprintExpanded by remember { mutableStateOf(false) }
-    val alpnOptions = listOf("http/1.1", "h2", "h3")
-    val flowOptions = listOf("none", "xtls-rprx-vision", "xtls-rprx-direct")
-    val fingerprintOptions = listOf("chrome", "firefox", "safari", "edge", "random")
+    val alpnOptions = listOf("","http/1.1", "h2", "h3")
+    val flowOptions = listOf("", "xtls-rprx-vision", "xtls-rprx-direct")
+    val fingerprintOptions = listOf("","chrome", "firefox", "safari", "edge", "random")
     val inputColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = Color.White,
         unfocusedTextColor = Color.White,
@@ -923,17 +923,22 @@ fun InputTab(core: ScannerCore, settings: SettingsManager) {
                 smartImport = it
                 parseConfigLinks(it).firstOrNull()?.let { cfg ->
                     protocol = cfg.protocol
-                    host = cfg.host.ifBlank { cfg.originalHost }
-                    sni = cfg.sni.ifBlank { cfg.host }
+
+                    host = cfg.host
+
+                    sni = if (cfg.tls) cfg.sni else ""
+
                     path = cfg.path
                     userId = cfg.userId
                     port = cfg.port.toString()
-                    alpn = cfg.alpn
+
+                    alpn = if (cfg.tls) cfg.alpn else ""
                     transport = cfg.transport
                     flow = cfg.flow
-                    fingerprint = cfg.fingerprint
+                    fingerprint = if (cfg.tls) cfg.fingerprint else ""
+
                     tlsEnabled = cfg.tls
-                    insecure = cfg.allowInsecure
+                    insecure = if (cfg.tls) cfg.allowInsecure else false
                 }
             },
             label = { Text("Paste one VLESS/Trojan config") },
@@ -1014,7 +1019,7 @@ fun InputTab(core: ScannerCore, settings: SettingsManager) {
                 ) {
                     alpnOptions.forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(option) },
+                            text = { Text(if (option.isBlank()) "(empty)" else option) },
                             onClick = {
                                 alpn = option
                                 alpnExpanded = false
@@ -1046,7 +1051,7 @@ fun InputTab(core: ScannerCore, settings: SettingsManager) {
                 ) {
                     flowOptions.forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(option) },
+                            text = { Text(if (option.isBlank()) "(empty)" else option) },
                             onClick = {
                                 flow = option
                                 flowExpanded = false
@@ -1076,7 +1081,7 @@ fun InputTab(core: ScannerCore, settings: SettingsManager) {
                 ) {
                     fingerprintOptions.forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(option) },
+                            text = { Text(if (option.isBlank()) "(empty)" else option) },
                             onClick = {
                                 fingerprint = option
                                 fingerprintExpanded = false
@@ -1089,11 +1094,35 @@ fun InputTab(core: ScannerCore, settings: SettingsManager) {
         Row(verticalAlignment = Alignment.CenterVertically) { Text("TLS", color = Color.White, modifier = Modifier.weight(1f)); Switch(checked = tlsEnabled, onCheckedChange = { tlsEnabled = it }) }
         Row(verticalAlignment = Alignment.CenterVertically) { Text("Allow insecure", color = Color.White, modifier = Modifier.weight(1f)); Switch(checked = insecure, onCheckedChange = { insecure = it }) }
         Button(onClick = {
-            settings.protocol = protocol; settings.host = host.trim(); settings.sni = sni.trim(); settings.path = path.trim().ifBlank { "/" }; settings.userId = userId.trim(); settings.port = port.trim().ifBlank { if (tlsEnabled) "443" else "80" }; settings.alpn = alpn.trim(); settings.transport = transport.trim().ifBlank { "ws" }; settings.flow = flow.trim().ifBlank { "none" }; settings.fingerprint = fingerprint.trim().ifBlank { "chrome" }; settings.tls = tlsEnabled; settings.insecure = insecure
+            settings.protocol = protocol
+            settings.host = host.trim()
+            settings.sni = if (tlsEnabled) sni.trim() else ""
+            settings.path = path.trim().ifBlank { "/" }
+            settings.userId = userId.trim()
+            settings.port = port.trim().ifBlank { if (tlsEnabled) "443" else "80" }
+            settings.alpn = if (tlsEnabled) alpn.trim() else ""
+            settings.transport = transport.trim().ifBlank { "ws" }
+            settings.flow = flow.trim()
+            settings.fingerprint = if (tlsEnabled) fingerprint.trim() else ""
+            settings.tls = tlsEnabled
+            settings.insecure = if (tlsEnabled) insecure else false
             Toast.makeText(context, "Saved for ${if (core == ScannerCore.CLOUDFRONT) "CloudFront" else "Cloudflare"}", Toast.LENGTH_SHORT).show()
         }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = palette.primary, contentColor = Color.Black)) { Text("SAVE INPUT") }
         Button(onClick = {
-            settings.clearAll(); protocol = "vless"; host = ""; sni = ""; path = "/"; userId = ""; port = "443"; alpn = "http/1.1"; transport = "ws"; flow = "none"; fingerprint = "chrome"; tlsEnabled = true; insecure = false; smartImport = ""
+            settings.clearAll()
+            protocol = "vless"
+            host = ""
+            sni = ""
+            path = "/"
+            userId = ""
+            port = "443"
+            alpn = ""
+            transport = "ws"
+            flow = ""
+            fingerprint = ""
+            tlsEnabled = true
+            insecure = false
+            smartImport = ""
         }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8E2424))) { Text("RESET INPUT") }
     }
 }
@@ -1830,12 +1859,23 @@ private fun parseSingleConfig(link: String): ParsedTunnelConfig? {
         val port = if (uri.port == -1) 443 else uri.port
         val transport = uri.getQueryParameter("type") ?: "ws"
         val qsHost = uri.getQueryParameter("host") ?: ""
-        val sni = uri.getQueryParameter("sni") ?: qsHost
-        val path = uri.getQueryParameter("path")?.let { URLDecoder.decode(it, "UTF-8") } ?: "/"
-        val alpn = uri.getQueryParameter("alpn")?.let { URLDecoder.decode(it, "UTF-8") } ?: "http/1.1"
-        val flow = uri.getQueryParameter("flow") ?: "none"
-        val fp = uri.getQueryParameter("fp") ?: "chrome"
-        val sec = uri.getQueryParameter("security") ?: if (port == 443) "tls" else "none"
+
+        val sni = uri.getQueryParameter("sni") ?: ""
+
+        val path = uri.getQueryParameter("path")
+            ?.let { URLDecoder.decode(it, "UTF-8") }
+            ?: "/"
+
+        val alpn = uri.getQueryParameter("alpn")
+            ?.let { URLDecoder.decode(it, "UTF-8") }
+            ?: ""
+
+        val flow = uri.getQueryParameter("flow") ?: ""
+
+        val fp = uri.getQueryParameter("fp") ?: ""
+
+        val sec = uri.getQueryParameter("security")
+            ?: if (port == 443) "tls" else "none"
         val allowInsecure = (uri.getQueryParameter("allowInsecure") ?: uri.getQueryParameter("insecure") ?: "0") in setOf("1", "true")
         ParsedTunnelConfig(protocol, userInfo, host, port, qsHost, sni, path, transport, sec.equals("tls", true) || sec.equals("reality", true), alpn, fp, flow, allowInsecure, Uri.decode(uri.fragment ?: host), link)
     } catch (_: Throwable) { null }
@@ -1999,7 +2039,7 @@ private fun buildWebSocketHandshake(config: ParsedTunnelConfig): String {
 
 private fun buildUri(base: ParsedTunnelConfig, candidateIp: String, status: String): String {
     val security = if (base.tls) "tls" else "none"
-    val hostValue = base.host.ifBlank { base.sni.ifBlank { base.originalHost } }
+    val hostValue = base.host
     val query = buildList {
         add("encryption=none")
         if (base.protocol.equals("vless", true) && base.flow.isNotBlank()) add("flow=${urlEnc(base.flow)}")
