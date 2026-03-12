@@ -6,6 +6,32 @@
 
 # 🚀 Advanced L7 Cloudflare Scanner & Analyzer (Android)
 ### آنالیزور و اسکنر پیشرفته لایه ۷ کلودفلر (نسخه اندروید)
+
+## ✨ Minor changes (New in v1.5.5)
+
+- Fixed host generation so empty host no longer becomes host=sni in output configs.
+
+- Added (empty) option to ALPN / Flow / Fingerprint dropdowns.
+
+- Improved smart import and URI builder to correctly preserve blank host values.
+
+---
+
+## 🇮🇷 توضیحات فارسی
+
+
+### ✨تغییرات کوچک (نسخه 1.5.5)
+اصلاح تولید پارامتر host تا وقتی خالی است دیگر به host=sni تبدیل نشود.
+
+اضافه شدن گزینه (empty) به دراپ‌داون‌های ALPN ،Flow و Fingerprint.
+
+بهبود Smart Import و URI builder برای حفظ درست مقدار خالی Host.
+
+---
+
+
+
+
 ## ✨ Key Features (New in v1.5.4)
 
 - **Xray Final Validation:** Final scan results can now be validated through an integrated Xray bridge for behavior closer to a real client.
