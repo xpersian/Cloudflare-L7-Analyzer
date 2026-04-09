@@ -189,5 +189,26 @@ UUID:
 - **Network:** Java/Kotlin SSL Sockets (L7)
 
 ---
+
+---
+
+## ☕ Support the Project / حمایت از پروژه
+
+If you find this project useful, you can support its development:
+
+اگر این پروژه برات مفید بوده، می‌تونی برای حمایت از توسعه اون کمک کنی:
+
+### 💰 TRON (TRC20)
+**TFJ6ucBpZ6KghntTq9W3eadnN8gPCqgF3T**
+
+
+- **Network:** TRON (TRC20)  
+- **Supported:** TRX / USDT (TRC20)
+
+🙏 Your support helps keep this project active and continuously improving.  
+🙏 حمایت شما باعث ادامه و پیشرفت پروژه خواهد شد.
+
+---
+
 *Developed with ❤️ for a free and stable internet.*
 حقوق معنوی این نرم افزار برای من محفوظ می باشد.
