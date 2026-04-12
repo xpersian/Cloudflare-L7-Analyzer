@@ -64,7 +64,7 @@ import javax.net.ssl.SSLParameters
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import androidx.compose.material3.NavigationBarItemDefaults
-private const val APP_VERSION = "v1.5.5"
+private const val APP_VERSION = "v1.5.6"
 
 enum class ScannerCore { CLOUDFLARE, CLOUDFRONT }
 enum class ResultTier { VERIFIED, STRONG, GOOD, BORDERLINE, FAILED }
@@ -364,27 +364,80 @@ class ScanService : Service() {
     ): List<DisplayResult> {
         val configs = parseConfigLinks(payload)
         if (configs.isEmpty()) throw IllegalArgumentException("No valid configs found")
+
         val output = resumeResults.toMutableList()
 
         for (index in startIndex until configs.size) {
+            val parsedInputConfig = configs[index]
+
             if (ScanRuntime.pauseRequested) {
-                ScanRuntime.rememberRequest(ScanResumeRequest(core, ScanMode.CONFIG, payload, configs[index], index, output.toList()))
+                ScanRuntime.rememberRequest(
+                    ScanResumeRequest(
+                        core = core,
+                        mode = ScanMode.CONFIG,
+                        payload = payload,
+                        config = parsedInputConfig,
+                        nextIndex = index,
+                        currentResults = output.toList()
+                    )
+                )
                 throw PauseScanException()
             }
 
-            val cfg = configs[index]
-            val candidates = listOfNotNull(cfg.originalHost.takeIf(::isProbablyIp))
-            val result = runThreeStageScan(this@ScanService, core, cfg, candidates, "Config ${index + 1}/${configs.size}") { frac, label ->
+            val extractedAddress = parsedInputConfig.originalHost.trim()
+            if (extractedAddress.isBlank()) continue
+
+            val templateConfig = intentTemplateForCore(core)
+
+            val result = runThreeStageScan(
+                context = this@ScanService,
+                core = core,
+                baseConfig = templateConfig,
+                candidates = listOf(extractedAddress),
+                progressPrefix = "Config ${index + 1}/${configs.size}"
+            ) { frac, label ->
                 ScanRuntime.progress(frac, label)
                 notifyProgress(label, frac, false)
             }
+
             output += result
-            ScanRuntime.rememberRequest(ScanResumeRequest(core, ScanMode.CONFIG, payload, cfg, index + 1, output.toList()))
+
+            ScanRuntime.rememberRequest(
+                ScanResumeRequest(
+                    core = core,
+                    mode = ScanMode.CONFIG,
+                    payload = payload,
+                    config = parsedInputConfig,
+                    nextIndex = index + 1,
+                    currentResults = output.toList()
+                )
+            )
         }
 
         return output.sortedByDescending { it.confidence }
     }
 
+    private fun intentTemplateForCore(core: ScannerCore): ParsedTunnelConfig {
+        val currentIntentConfig = ScanRuntime.consumeResumeRequest()?.config
+        if (currentIntentConfig != null) return currentIntentConfig
+
+        return ParsedTunnelConfig(
+            protocol = "vless",
+            userId = "",
+            originalHost = "",
+            port = 443,
+            host = "",
+            sni = "",
+            path = "/",
+            transport = "ws",
+            tls = true,
+            alpn = "",
+            fingerprint = "",
+            flow = "",
+            allowInsecure = false,
+            label = if (core == ScannerCore.CLOUDFRONT) "cloudfront-manual" else "cloudflare-manual"
+        )
+    }
     private suspend fun runIpScan(
         core: ScannerCore,
         config: ParsedTunnelConfig,
@@ -1771,7 +1824,7 @@ private suspend fun runFastScanStage(baseConfig: ParsedTunnelConfig, uniqueCandi
 
 private fun performFastScanProbe(baseConfig: ParsedTunnelConfig, ip: String): FastScanProbe {
     val portsToTest = candidatePortsForFastScan(baseConfig.port)
-    val quickTimeoutMs = 3200
+    val quickTimeoutMs = 6000
     val quickKeepAliveMs = 450L
     val portResults = mutableListOf<Pair<Int, Stage1Probe>>()
     var alpnMismatch = false
@@ -1807,7 +1860,7 @@ private fun performFastScanProbe(baseConfig: ParsedTunnelConfig, ip: String): Fa
     val bestPort = best.first
     val attempts = mutableListOf(best.second)
     repeat(2) {
-        val retry = performStage1Probe(baseConfig.copy(originalHost = ip, port = bestPort), 2600, 350L)
+        val retry = performStage1Probe(baseConfig.copy(originalHost = ip, port = bestPort), 4500, 450L)
         if (retry.success) attempts += retry
     }
     val latencies = attempts.map { it.latencyMs }.filter { it > 0 }
@@ -1848,6 +1901,11 @@ private fun tierForConfidence(confidence: Int): ResultTier = when {
 
 private fun parseConfigLinks(raw: String): List<ParsedTunnelConfig> = raw.lineSequence().mapNotNull { parseSingleConfig(it.trim()) }.toList()
 
+private fun extractConfigCandidates(config: ParsedTunnelConfig): List<String> {
+    return listOf(
+        config.originalHost.trim()
+    ).filter { it.isNotBlank() }.distinct()
+}
 private fun parseSingleConfig(link: String): ParsedTunnelConfig? {
     if (link.isBlank() || !link.contains("://") || !link.contains("@")) return null
     return try {
